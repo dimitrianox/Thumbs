@@ -49,7 +49,6 @@ function resolverRuta(url) {
   return rutaCarpeta + url;
 }
 
-// --- FUNCIÓN DE FECHA CORREGIDA ---
 function formatearFecha(fechaOriginal) {
   if (!fechaOriginal) return '';
   
@@ -57,16 +56,8 @@ function formatearFecha(fechaOriginal) {
   const partes = parteFecha.split(/[:\/-]/);
   
   if (partes.length === 3) {
-    let dia, mes, anio;
-
-    // Detectar si la cadena empieza por AÑO ("2025/05/25") o por DÍA ("25/05/2025")
-    if (partes[0].length === 4) {
-      [anio, mes, dia] = partes;
-    } else {
-      [dia, mes, anio] = partes;
-    }
-
-    const fechaObj = new Date(parseInt(anio, 10), parseInt(mes, 10) - 1, parseInt(dia, 10));
+    const [anio, mes, dia] = partes;
+    const fechaObj = new Date(anio, mes - 1, dia);
     
     if (!isNaN(fechaObj.getTime())) {
       return fechaObj.toLocaleDateString('es-ES', {
@@ -304,6 +295,9 @@ modalImg.addEventListener('touchend', (e) => {
   }
 });
 
+// Interacción al tocar la imagen:
+// Si la escala es mayor a 1, la resetea a tamaño normal.
+// Si ya está en escala 1, cierra el modal.
 modalImg.addEventListener('click', (e) => {
   e.stopPropagation();
   if (scale > 1) {
