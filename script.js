@@ -19,6 +19,16 @@ const infoDescripcion = document.getElementById('info-descripcion');
 
 const clasesTamano = ['', '', 'span-col-2', 'span-row-2', 'span-big'];
 
+// Variables para control de Zoom táctil en Modal
+let scale = 1;
+let lastScale = 1;
+let startDistance = 0;
+let posX = 0;
+let posY = 0;
+let startX = 0;
+let startY = 0;
+let isDragging = false;
+
 // Deshabilitar menú contextual
 document.addEventListener('contextmenu', function(e) {
   if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO' || e.target.closest('.modal')) {
@@ -70,6 +80,14 @@ function mezclarArray(array) {
   return copia;
 }
 
+function resetZoom() {
+  scale = 1;
+  lastScale = 1;
+  posX = 0;
+  posY = 0;
+  modalImg.style.transform = `translate(0px, 0px) scale(1)`;
+}
+
 function cerrarModal() {
   modal.classList.remove('overlay');
   document.body.style.overflow = '';
@@ -77,6 +95,7 @@ function cerrarModal() {
   modalVideo.removeAttribute('src');
   modalVideo.load();
   modalImg.src = '';
+  resetZoom();
 }
 
 // --- CARGA Y RENDERIZADO DE DATOS (FETCH) ---
@@ -88,7 +107,6 @@ fetch(rutaJson)
   .then(data => {
     let listaArchivos = [];
     
-    // Encabezado según propiedad 'pais' o parámetro URL
     if (data && data.pais) {
       const partes = data.pais.trim().split(' ');
       if (partes.length > 1 && !isNaN(partes[partes.length - 1])) {
@@ -111,7 +129,6 @@ fetch(rutaJson)
       }
     }
 
-    // Normalizar lista de elementos (soporta Array directo o propiedad items)
     if (Array.isArray(data)) {
       listaArchivos = data;
     } else if (data && Array.isArray(data.items)) {
@@ -141,11 +158,9 @@ fetch(rutaJson)
       const anchor = document.createElement('a');
       anchor.href = '#';
 
-      // Asignar tamaño aleatorio en el grid
       const claseAzar = clasesTamano[Math.floor(Math.random() * clasesTamano.length)];
       if (claseAzar) anchor.classList.add(claseAzar);
 
-      // Guardar datos en dataset
       anchor.dataset.url = urlHD;
       anchor.dataset.titulo = titulo;
       anchor.dataset.ubicacion = ubicacion;
@@ -171,7 +186,7 @@ fetch(rutaJson)
         }
       } else {
         const img = document.createElement('img');
-        img.src = urlThumb; // Carga la miniatura ligera
+        img.src = urlThumb;
         img.alt = titulo || 'Fotografía';
         img.loading = 'lazy';
         img.referrerPolicy = 'no-referrer';
@@ -223,8 +238,9 @@ function inicializarEventos() {
         modalVideo.removeAttribute('src');
         modalVideo.load();
         modalImg.referrerPolicy = 'no-referrer';
-        modalImg.src = url; // Carga la imagen HD al abrir
+        modalImg.src = url;
         modalImg.style.display = 'block';
+        resetZoom();
       }
 
       modal.classList.add('overlay');
@@ -233,9 +249,58 @@ function inicializarEventos() {
   });
 }
 
+// --- GESTOS PINCH-TO-ZOOM Y ARRASTRE EN LA IMAGEN DEL MODAL ---
+function getDistance(touches) {
+  return Math.hypot(
+    touches[0].clientX - touches[1].clientX,
+    touches[0].clientY - touches[1].clientY
+  );
+}
+
+modalImg.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 2) {
+    startDistance = getDistance(e.touches);
+  } else if (e.touches.length === 1 && scale > 1) {
+    isDragging = true;
+    startX = e.touches[0].clientX - posX;
+    startY = e.touches[0].clientY - posY;
+  }
+});
+
+modalImg.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const currentDistance = getDistance(e.touches);
+    if (startDistance > 0) {
+      scale = Math.min(Math.max(1, lastScale * (currentDistance / startDistance)), 4);
+      modalImg.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    }
+  } else if (e.touches.length === 1 && isDragging && scale > 1) {
+    e.preventDefault();
+    posX = e.touches[0].clientX - startX;
+    posY = e.touches[0].clientY - startY;
+    modalImg.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+  }
+});
+
+modalImg.addEventListener('touchend', (e) => {
+  if (e.touches.length < 2) {
+    lastScale = scale;
+  }
+  if (e.touches.length === 0) {
+    isDragging = false;
+    if (scale <= 1) {
+      resetZoom();
+    }
+  }
+});
+
+// Cerrar modal al hacer clic/tap en la imagen si no tiene zoom
 modalImg.addEventListener('click', (e) => {
   e.stopPropagation();
-  cerrarModal();
+  if (scale === 1) {
+    cerrarModal();
+  }
 });
 
 modal.addEventListener('click', (e) => {
