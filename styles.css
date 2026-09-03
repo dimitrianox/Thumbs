@@ -23,48 +23,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.2rem 1rem 0.6rem 1rem;
+  padding: 1.6rem 1rem 0.6rem 1rem;
 }
 
-.divider-top {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.3rem;
-}
-
-.divider-top::before,
-.divider-top::after,
-.divider-bottom::before,
-.divider-bottom::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #b89146, transparent);
-}
-
-/* FLOR DE LIS - INTEGRADA CON EL TÍTULO */
-.header-icon-symbol {
-  font-size: 1.6em;
-  margin: 0 12px;
-  line-height: 1;
-  display: inline-block;
-  font-family: "Segoe UI Symbol", "Apple Symbols", serif;
-  background: linear-gradient(180deg, #fff2a3 0%, #d8b467 50%, #9e7a2f 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
-}
-
-.footer-icon {
-  width: 18px;
-  height: 18px;
-  color: #d8b467;
-  margin: 0 10px;
-}
-
-/* TÍTULO - INTEGRADO CON LA FLOR DE LIS */
+/* TÍTULO PRINCIPAL DEL PAÍS */
 .country-title {
   font-family: 'Cinzel', serif;
   font-size: 1.5rem;
@@ -80,29 +42,40 @@ body {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
 }
 
+/* DIVISOR DEL AÑO CON LÍNEAS DE GRADIENTE A LOS LADOS */
 .divider-year {
   width: 100%;
+  max-width: 450px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.3rem;
+  margin-top: 0.5rem;
 }
 
 .divider-year::before,
-.divider-year::after {
+.divider-year::after,
+.divider-bottom::before,
+.divider-bottom::after {
   content: "";
-  width: 40px;
+  flex: 1;
   height: 1px;
-  background: #b89146;
+  background: linear-gradient(90deg, transparent, #b89146, transparent);
 }
 
 .country-year {
   font-family: 'Cinzel', serif;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 4px;
   color: #d8b467;
-  padding: 0 10px;
+  padding: 0 14px;
+}
+
+.footer-icon {
+  width: 18px;
+  height: 18px;
+  color: #d8b467;
+  margin: 0 10px;
 }
 
 .main-footer {
