@@ -295,10 +295,14 @@ modalImg.addEventListener('touchend', (e) => {
   }
 });
 
-// Cerrar modal al hacer clic/tap en la imagen si no tiene zoom
+// Interacción al tocar la imagen:
+// Si la escala es mayor a 1, la resetea a tamaño normal.
+// Si ya está en escala 1, cierra el modal.
 modalImg.addEventListener('click', (e) => {
   e.stopPropagation();
-  if (scale === 1) {
+  if (scale > 1) {
+    resetZoom();
+  } else {
     cerrarModal();
   }
 });
