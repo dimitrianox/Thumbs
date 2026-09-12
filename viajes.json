@@ -1,0 +1,23 @@
+[
+  {
+    "galeria": "toledo-2025",
+    "nombre": "TOLEDO",
+    "anio": "2025",
+    "lat": 39.8628,
+    "lng": -4.0273
+  },
+  {
+    "galeria": "paris-2025",
+    "nombre": "PARÍS",
+    "anio": "2024",
+    "lat": 48.8566,
+    "lng": 2.3522
+  },
+  {
+    "galeria": "londres-2025",
+    "nombre": "LONDRES",
+    "anio": "2025",
+    "lat": 51.5074,
+    "lng": -0.1278
+  }
+]

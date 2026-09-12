@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <meta name="theme-color" content="#070e17">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="referrer" content="no-referrer">
+  <title>Galería</title>
+  
+  <!-- Fuentes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+
+  <!-- Encabezado Editorial estilo Póster -->
+  <header class="main-header">
+    <h1 id="titulo-pais" class="country-title"></h1>
+    
+    <div class="divider-year">
+      <span id="titulo-anio" class="country-year"></span>
+    </div>
+  </header>
+
+  <main id="galeria"></main>
+
+  <!-- Adorno inferior estilo brújula -->
+  <footer class="main-footer">
+    <div class="divider-bottom">
+      <svg class="footer-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+      </svg>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal">
+    <div class="modal-content">
+      <!-- Encabezado superior -->
+      <div class="editorial-header">
+        <span id="info-ubicacion"></span>
+        <span id="info-fecha"></span>
+      </div>
+
+      <!-- Contenedor de imagen/video e overlay de descripción -->
+      <div class="modal-media-wrapper" id="modal-media-wrapper">
+        <img src="" alt="" id="modal-img" style="display: none;" referrerpolicy="no-referrer" />
+        <video id="modal-video" controls style="display: none;" playsinline referrerpolicy="no-referrer"></video>
+        
+        <!-- Capa superpuesta para la descripción al mantener presionado -->
+        <div id="description-overlay" class="description-overlay"></div>
+      </div>
+
+      <!-- Título inferior -->
+      <div class="editorial-footer">
+        <h3 id="info-titulo"></h3>
+        <p id="info-descripcion"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

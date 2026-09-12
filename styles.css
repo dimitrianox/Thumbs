@@ -1,0 +1,370 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #e2e8f0;
+  background-color: #070e17;
+  font-family: 'Manrope', sans-serif;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+/* ENCABEZADO COMPACTO */
+.main-header {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.6rem 1rem 0.6rem 1rem;
+}
+
+/* TÍTULO PRINCIPAL DEL PAÍS */
+.country-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  text-align: center;
+  margin-right: -8px;
+  margin-top: 0;
+  background: linear-gradient(180deg, #fff2a3 0%, #d8b467 50%, #9e7a2f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+}
+
+/* DIVISOR DEL AÑO */
+.divider-year {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.divider-year::before,
+.divider-year::after,
+.divider-bottom::before,
+.divider-bottom::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #b89146, transparent);
+}
+
+.country-year {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 4px;
+  color: #d8b467;
+  padding: 0 14px;
+}
+
+.footer-icon {
+  width: 18px;
+  height: 18px;
+  color: #d8b467;
+  margin: 0 10px;
+}
+
+.main-footer {
+  width: 100%;
+  max-width: 800px;
+  padding: 0.5rem 0 3rem 0;
+}
+
+.divider-bottom {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* GRILLA MASONRY DE LA GALERÍA */
+main {
+  max-width: 800px;
+  width: 90vw;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-auto-rows: 150px;
+  gap: 12px;
+  justify-content: center;
+  grid-auto-flow: dense;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+main a,
+main .galeria-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 2px solid #b89146;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  background-color: #050b14;
+  transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  pointer-events: auto !important;
+  touch-action: auto;
+  cursor: pointer;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+main a:hover,
+main a:focus,
+main .galeria-item:hover,
+main .galeria-item:focus {
+  border-color: #d4af37;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25);
+  outline: none;
+}
+
+main a.span-col-2, main .galeria-item.span-col-2 { grid-column: span 2; }
+main a.span-row-2, main .galeria-item.span-row-2 { grid-row: span 2; }
+main a.span-big, main .galeria-item.span-big { grid-column: span 2; grid-row: span 2; }
+
+main img,
+main video {
+  object-fit: cover;
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: brightness(0.92) contrast(1.02);
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+main a:focus img,
+main a:hover img,
+main a:focus video,
+main a:hover video,
+main .galeria-item:hover img,
+main .galeria-item:hover video {
+  filter: brightness(1) contrast(1);
+  transform: scale(1.02);
+}
+
+/* =========================================================
+   MODAL - PANTALLA COMPLETA CON TEXTOS ENMARCADOS
+   ========================================================= */
+div.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(7, 14, 23, 0.96);
+  backdrop-filter: blur(10px);
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1000;
+  padding: 12px;
+  overflow: hidden !important;
+  touch-action: none;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+div.modal.overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
+  max-height: calc(100dvh - 24px);
+  z-index: 5;
+  overflow: hidden;
+}
+
+/* MARCO CONTENEDOR PRINCIPAL */
+.modal-media-wrapper {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  padding: 4px 0;
+  overflow: hidden;
+  cursor: grab;
+  pointer-events: auto !important;
+  touch-action: none;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+.modal-media-wrapper:active {
+  cursor: grabbing;
+}
+
+div.modal img,
+div.modal video {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1.5px solid #b89146;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  transform-origin: center center;
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+
+/* ENCABEZADO Y PIE */
+.editorial-header {
+  width: 100%;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  flex-shrink: 0;
+  z-index: 10;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+#info-ubicacion {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #d4af37;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  display: inline-block;
+}
+
+#info-fecha {
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  color: #f8fafc;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+  display: inline-block;
+}
+
+/* CUADRO DE DESCRIPCIÓN SOBRE LA IMAGEN */
+.description-overlay {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  max-width: 520px;
+  background: rgba(7, 14, 23, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(184, 145, 70, 0.6);
+  border-radius: 8px;
+  color: #f8fafc;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  padding: 12px 16px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 20;
+}
+
+.description-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.editorial-footer {
+  width: 100%;
+  padding: 8px 0;
+  text-align: center;
+  pointer-events: none;
+  flex-shrink: 0;
+  z-index: 10;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+#info-titulo {
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #f8fafc;
+  letter-spacing: 0.5px;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow: visible;
+  line-height: 1.25;
+}
+
+#info-descripcion {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .country-title {
+    font-size: 1.2rem;
+    letter-spacing: 5px;
+    margin-right: -5px;
+  }
+}
+
+img {
+  pointer-events: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+video {
+  pointer-events: auto !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
