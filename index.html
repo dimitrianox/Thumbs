@@ -3,60 +3,419 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
+
+<!-- CAMUFLAJE DE BARRA DE NAVEGADOR Y ESTADO -->
   <meta name="theme-color" content="#070e17">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="referrer" content="no-referrer">
-  <title>Galería</title>
+ 
+ <title>Colección de Viajes</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
-  <!-- Fuentes Google -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #070e17;
+      color: #e2e8f0;
+      font-family: 'Manrope', sans-serif;
+      overflow: hidden;
+    }
+
+    .app-layout {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* MAPA LEAFLET EN PANTALLA COMPLETA */
+    #mapa {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      background-color: #070e17 !important;
+      will-change: transform;
+    }
+
+    /* FILTRO DE MAPA OSCURO ELEGANTE */
+    #mapa .leaflet-tile-pane {
+      filter: invert(90%) hue-rotate(180deg) brightness(60%) contrast(100%) saturate(25%);
+      -webkit-filter: invert(90%) hue-rotate(180deg) brightness(60%) contrast(100%) saturate(25%);
+    }
+
+    /* OCULTAR CONTROLES Y ATRIBUCIONES NATIVAS DE LEAFLET */
+    .leaflet-control-attribution,
+    .leaflet-control-zoom,
+    .leaflet-bottom,
+    .leaflet-right {
+      display: none !important;
+    }
+
+    /* BARRA SUPERIOR EN 2 RENGLONES */
+    .navbar-floating {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 1.5rem 1.5rem 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(7, 14, 23, 0.9) 0%, rgba(7, 14, 23, 0.6) 70%, rgba(7, 14, 23, 0) 100%);
+    }
+
+    .navbar-floating * {
+      pointer-events: auto;
+    }
+
+    /* RENGLÓN 1: TÍTULO CENTRADO */
+    .navbar-header {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .navbar-header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      letter-spacing: 4px;
+      text-align: center;
+      background: linear-gradient(180deg, #fff2a3 0%, #d8b467 50%, #9e7a2f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9));
+    }
+
+    /* RENGLÓN 2: CIUDADES DESLIZABLES HORIZONTALMENTE */
+    .destinations-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scroll-behavior: smooth;
+      padding-bottom: 5px;
+      width: 100%;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .destinations-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .item-destino {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      text-decoration: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .item-destino:hover {
+      transform: translateY(-2px);
+    }
+
+    .node-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #0b1522;
+      border: 2px solid #475569;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .node-text {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .node-text h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 2px;
+      transition: color 0.3s ease;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+    }
+
+    .node-text span {
+      font-size: 0.75rem;
+      color: #64748b;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+
+    /* ESTADO SELECCIONADO (ACTIVO) */
+    .item-destino.active .node-dot {
+      background: radial-gradient(circle, #fff2a3 0%, #d8b467 60%, #9e7a2f 100%);
+      border-color: #fff2a3;
+      box-shadow: 0 0 12px rgba(216, 180, 103, 0.9);
+    }
+
+    .item-destino.active .node-text h2 {
+      background: linear-gradient(180deg, #fff2a3 0%, #d8b467 50%, #9e7a2f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .item-destino.active .node-text span {
+      color: #d8b467;
+    }
+
+    /* CONTENEDOR DEL MARCADOR LEAFLET */
+    .pin-container {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    /* PIN DORADO OPTIMIZADO */
+    .custom-pin-glow {
+      width: 23.4px;
+      height: 23.4px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff2a3 0%, #d8b467 60%, #9e7a2f 100%);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 18px rgba(216, 180, 103, 1), 0 0 36px rgba(216, 180, 103, 0.9);
+      cursor: pointer;
+      will-change: transform, opacity;
+      animation: pinDropFromTop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes pinDropFromTop {
+      0% {
+        transform: translateY(-250px) scale(0.3);
+        opacity: 0;
+      }
+      70% {
+        transform: translateY(0) scale(1.1);
+        opacity: 1;
+      }
+      85% {
+        transform: translateY(-8px) scale(0.95);
+      }
+      100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* ANIMACIÓN DE TRAZADO DE LÍNEA CURVA */
+    .ruta-curva-animada {
+      stroke-dashoffset: 1500;
+      animation: drawCurvedLine 1.3s ease-out forwards;
+      filter: drop-shadow(0 0 2px rgba(216, 180, 103, .3));
+    }
+
+    @keyframes drawCurvedLine {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Encabezado Editorial estilo Póster (Sin Flor de Lis) -->
-  <header class="main-header">
-    <h1 id="titulo-pais" class="country-title"></h1>
+  <div class="app-layout">
     
-    <div class="divider-year">
-      <span id="titulo-anio" class="country-year"></span>
-    </div>
-  </header>
-
-  <main id="galeria"></main>
-
-  <!-- Adorno inferior estilo brújula -->
-  <footer class="main-footer">
-    <div class="divider-bottom">
-      <svg class="footer-icon" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
-      </svg>
-    </div>
-  </footer>
-
-  <!-- Modal -->
-  <div class="modal">
-    <div class="modal-content">
-      <div class="editorial-header">
-        <span id="info-ubicacion"></span>
-        <span id="info-fecha"></span>
+    <!-- BARRA SUPERIOR EN DOS RENGLONES -->
+    <header class="navbar-floating">
+      <div class="navbar-header">
+        <h1>MIS VIAJES</h1>
       </div>
 
-      <div class="modal-media-wrapper">
-        <img src="" alt="" id="modal-img" style="display: none;" referrerpolicy="no-referrer" />
-        <video id="modal-video" controls style="display: none;" playsinline referrerpolicy="no-referrer"></video>
-      </div>
+      <nav id="destinations-row" class="destinations-row">
+        <!-- Generado dinámicamente desde viajes.json -->
+      </nav>
+    </header>
 
-      <div class="editorial-footer">
-        <h3 id="info-titulo"></h3>
-        <p id="info-descripcion"></p>
-      </div>
-    </div>
+    <!-- MAPA LEAFLET -->
+    <div id="mapa"></div>
+
   </div>
 
-  <script src="script.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // 1. Inicializar mapa con renderer Canvas/SVG optimizado
+    const mapa = L.map('mapa', {
+      zoomControl: false,
+      attributionControl: false,
+      preferCanvas: true
+    }).setView([46.2276, 2.2137], 5);
+
+    // Corregir dimensiones iniciales
+    requestAnimationFrame(() => mapa.invalidateSize());
+
+    // 2. OpenStreetMap mapa base libre
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(mapa);
+
+    const pinesRegistrados = new Map();
+    const curvasCache = new Map();
+    let lastCoords = null;
+
+    const pinIcon = L.divIcon({
+      className: 'pin-container',
+      html: '<div class="custom-pin-glow"></div>',
+      iconSize: [23.4, 23.4],
+      iconAnchor: [11.7, 11.7]
+    });
+
+    // Curva Bézier cuadrática memoizada (solo se calcula 1 vez por pareja de coordenadas)
+    function obtenerPuntosCurva(p1, p2) {
+      const cacheKey = `${p1.join(',')}_${p2.join(',')}`;
+      if (curvasCache.has(cacheKey)) return curvasCache.get(cacheKey);
+
+      const lat1 = p1[0], lng1 = p1[1];
+      const lat2 = p2[0], lng2 = p2[1];
+
+      const midLat = (lat1 + lat2) / 2;
+      const midLng = (lng1 + lng2) / 2;
+      const factorCurvatura = 0.22;
+      
+      const controlLat = midLat - ((lng2 - lng1) * factorCurvatura);
+      const controlLng = midLng + ((lat2 - lat1) * factorCurvatura);
+
+      const puntos = [];
+      const numPuntos = 30; // Reducido de 40 a 30 puntos sin pérdida visible de suavidad
+
+      for (let i = 0; i <= numPuntos; i++) {
+        const t = i / numPuntos;
+        const lat = (1 - t) * (1 - t) * lat1 + 2 * (1 - t) * t * controlLat + t * t * lat2;
+        const lng = (1 - t) * (1 - t) * lng1 + 2 * (1 - t) * t * controlLng + t * t * lng2;
+        puntos.push([lat, lng]);
+      }
+
+      curvasCache.set(cacheKey, puntos);
+      return puntos;
+    }
+
+    // CARGA DE DESTINOS DINÁMICOS Y ASIGNACIÓN DE EVENTOS ORIGINALES
+    fetch('./viajes.json')
+      .then(response => response.json())
+      .then(datos => {
+        const navRow = document.getElementById('destinations-row');
+
+        datos.forEach(destino => {
+          const a = document.createElement('a');
+          a.className = 'item-destino';
+          a.dataset.galeria = destino.galeria;
+          a.dataset.lat = destino.lat;
+          a.dataset.lng = destino.lng;
+
+          a.innerHTML = `
+            <div class="node-dot"></div>
+            <div class="node-text">
+              <h2>${destino.nombre}</h2>
+              <span>${destino.anio}</span>
+            </div>
+          `;
+
+          navRow.appendChild(a);
+        });
+
+        // INICIALIZAR LÓGICA DE EVENTOS ORIGINAL
+        inicializarEventos();
+      })
+      .catch(err => console.error("Error al cargar viajes.json:", err));
+
+    function inicializarEventos() {
+      const items = document.querySelectorAll('.item-destino');
+
+      items.forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          if (this.classList.contains('active')) return;
+
+          items.forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+
+          const lat = parseFloat(this.dataset.lat);
+          const lng = parseFloat(this.dataset.lng);
+          const galeria = this.dataset.galeria;
+          const newCoords = [lat, lng];
+          const keyPin = `${lat},${lng}`;
+
+          // 1. Trazar ruta si viene de otra ubicación
+          if (lastCoords && (lastCoords[0] !== lat || lastCoords[1] !== lng)) {
+            const puntosArco = obtenerPuntosCurva(lastCoords, newCoords);
+
+            const nuevaRutaCurva = L.polyline(puntosArco, {
+              color: '#d8b467',
+              weight: 2,
+              opacity: 0.55,
+              dashArray: '5, 8',
+              className: 'ruta-curva-animada'
+            }).addTo(mapa);
+
+            // Liberar el hilo de GPU al finalizar la animación
+            const pathElement = nuevaRutaCurva.getElement();
+            if (pathElement) {
+              pathElement.addEventListener('animationend', () => {
+                pathElement.classList.remove('ruta-curva-animada');
+                pathElement.style.strokeDashoffset = '0';
+              }, { once: true });
+            }
+          }
+
+          lastCoords = newCoords;
+
+          // 2. Vuelo suave de cámara
+          mapa.flyTo(newCoords, 6.5, {
+            duration: 1.1,
+            easeLinearity: 0.2
+          });
+
+          // 3. Crear pin único si no existe
+          if (!pinesRegistrados.has(keyPin)) {
+            setTimeout(() => {
+              const nuevoPin = L.marker(newCoords, { 
+                icon: pinIcon,
+                zIndexOffset: 1000 
+              }).addTo(mapa);
+
+              pinesRegistrados.set(keyPin, nuevoPin);
+
+              nuevoPin.on('click', () => {
+                window.location.href = `https://dimitrianox.github.io/Thumbs/?galeria=${galeria}`;
+              });
+            }, 250);
+          }
+        });
+      });
+    }
+
+    // Redimensionado optimizado con Debounce
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => mapa.invalidateSize(), 150);
+    });
+  </script>
 </body>
 </html>
